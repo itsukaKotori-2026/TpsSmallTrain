@@ -1,72 +1,73 @@
-﻿//版权所有Epic Games，股份有限公司保留所有权利。
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "firstTpsDemo002Character.generated.h"
+#include "demo002review001Character.generated.h"
 
 UCLASS(config=Game)
-class AfirstTpsDemo002Character : public ACharacter
+class Ademo002review001Character : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** 相机吊杆将相机定位在角色后面 */
+	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	/** 跟随摄像头 */
+	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 public:
-	AfirstTpsDemo002Character();
+	Ademo002review001Character();
 
-	/** 基本转弯速率，单位为度/秒。其他缩放可能会影响最终转弯速率 */
+	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
 
-	/** 基本上/下查找速率，单位为度/秒。其他缩放可能会影响最终速率。 */
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
 protected:
 
-	/** 重置VR中的HMD方向。 */
+	/** Resets HMD orientation in VR. */
 	void OnResetVR();
 
-	/** 需要向前/向后输入 */
+	/** Called for forwards/backward input */
 	void MoveForward(float Value);
 
-	/** 需要侧向输入 */
+	/** Called for side to side input */
 	void MoveRight(float Value);
 
 	/** 
-	 * 通过输入调用以给定速率转动。 
-	 * @param Rate	这是一个标准化率，即1.0表示所需转弯率的100%
+	 * Called via input to turn at a given rate. 
+	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void TurnAtRate(float Rate);
 
 	/**
-	 * 通过输入调用，以给定的速率向上/向下查找
-	 * @param Rate	这是一个标准化率，即1.0表示所需转弯率的100%
+	 * Called via input to turn look up/down at a given rate. 
+	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
 
-	/** 触摸输入开始时的处理程序。 */
+	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
 
-	/** 触摸输入停止时的处理程序 */
+	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 protected:
-	// APawn接口
+	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// APawn界面结束
+	// End of APawn interface
+	//myadd
 	void OnFire();
 public:
-	/** 返回CameraRoom子对象 **/
+	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** 返回FollowCamera子对象 **/
+	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
 

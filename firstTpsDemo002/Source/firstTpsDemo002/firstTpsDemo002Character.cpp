@@ -1,4 +1,4 @@
-// °æÈ¨ËùÓĞEpic Games£¬¹É·İÓĞÏŞ¹«Ë¾±£ÁôËùÓĞÈ¨Àû¡£
+ï»¿// ç‰ˆæƒæ‰€æœ‰Epic Gamesï¼Œè‚¡ä»½æœ‰é™å…¬å¸ä¿ç•™æ‰€æœ‰æƒåˆ©ã€‚
 
 #include "firstTpsDemo002Character.h"
 #include "ATargetActor.h"
@@ -17,45 +17,45 @@
 
 AfirstTpsDemo002Character::AfirstTpsDemo002Character()
 {
-	// ÉèÖÃÅö×²²ÕµÄ³ß´ç
+	// è®¾ç½®ç¢°æ’èˆ±çš„å°ºå¯¸
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// ÉèÖÃÎÒÃÇµÄÊäÈëÖÜ×ªÂÊ
+	// è®¾ç½®æˆ‘ä»¬çš„è¾“å…¥å‘¨è½¬ç‡
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
-	// ¿ØÖÆÆ÷Ğı×ªÊ±²»ÒªĞı×ª¡£ÈÃËüÖ»Ó°ÏìÏà»ú¡£
+	// æ§åˆ¶å™¨æ—‹è½¬æ—¶ä¸è¦æ—‹è½¬ã€‚è®©å®ƒåªå½±å“ç›¸æœºã€‚
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	// ÅäÖÃ½ÇÉ«ÒÆ¶¯
-	GetCharacterMovement()->bOrientRotationToMovement = true; // ×Ö·ûÑØÊäÈë·½ÏòÒÆ¶¯¡£	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...ÔÚÕâ¸ö×ªËÙÏÂ
+	// é…ç½®è§’è‰²ç§»åŠ¨
+	GetCharacterMovement()->bOrientRotationToMovement = true; // å­—ç¬¦æ²¿è¾“å…¥æ–¹å‘ç§»åŠ¨ã€‚	
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...åœ¨è¿™ä¸ªè½¬é€Ÿä¸‹
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
-	// ´´½¨Ò»¸öÉãÏñÍ·µõ¸Ë£¨Èç¹û·¢ÉúÅö×²£¬½«ÆäÀ­ÏòÍæ¼Ò£©
+	// åˆ›å»ºä¸€ä¸ªæ‘„åƒå¤´åŠæ†ï¼ˆå¦‚æœå‘ç”Ÿç¢°æ’ï¼Œå°†å…¶æ‹‰å‘ç©å®¶ï¼‰
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // ÉãÓ°»ú¸úÔÚ½ÇÉ«ºóÃæÕâÃ´Ô¶µÄµØ·½
-	CameraBoom->bUsePawnControlRotation = true; // ¸ù¾İ¿ØÖÆÆ÷Ğı×ªÊÖ±Û
+	CameraBoom->TargetArmLength = 300.0f; // æ‘„å½±æœºè·Ÿåœ¨è§’è‰²åé¢è¿™ä¹ˆè¿œçš„åœ°æ–¹
+	CameraBoom->bUsePawnControlRotation = true; // æ ¹æ®æ§åˆ¶å™¨æ—‹è½¬æ‰‹è‡‚
 
-	// ´´½¨¸ú×ÙÉãÏñÍ·
+	// åˆ›å»ºè·Ÿè¸ªæ‘„åƒå¤´
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // ½«ÉãÏñÍ·Á¬½Óµ½µõ¸ËÄ©¶Ë£¬ÈÃµõ¸Ëµ÷ÕûÒÔÆ¥Åä¿ØÖÆÆ÷·½Ïò
-	FollowCamera->bUsePawnControlRotation = false; //Ïà»ú²»Ïà¶ÔÓÚÊÖ±ÛĞı×ª
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // å°†æ‘„åƒå¤´è¿æ¥åˆ°åŠæ†æœ«ç«¯ï¼Œè®©åŠæ†è°ƒæ•´ä»¥åŒ¹é…æ§åˆ¶å™¨æ–¹å‘
+	FollowCamera->bUsePawnControlRotation = false; //ç›¸æœºä¸ç›¸å¯¹äºæ‰‹è‡‚æ—‹è½¬
 
-	// ×¢Òâ£ºÍø¸ñ×é¼şÉÏµÄ¹Ç¼ÜÍø¸ñºÍ¶¯»­À¶Í¼ÒıÓÃ£¨¼Ì³Ğ×Ô½ÇÉ«£©
-	// ÔÚÃûÎªMyCharacterµÄÅÉÉúÀ¶Í¼×Ê²úÖĞÉèÖÃ£¨ÒÔ±ÜÃâÔÚC++ÖĞÖ±½ÓÒıÓÃÄÚÈİ£©
+	// æ³¨æ„ï¼šç½‘æ ¼ç»„ä»¶ä¸Šçš„éª¨æ¶ç½‘æ ¼å’ŒåŠ¨ç”»è“å›¾å¼•ç”¨ï¼ˆç»§æ‰¿è‡ªè§’è‰²ï¼‰
+	// åœ¨åä¸ºMyCharacterçš„æ´¾ç”Ÿè“å›¾èµ„äº§ä¸­è®¾ç½®ï¼ˆä»¥é¿å…åœ¨C++ä¸­ç›´æ¥å¼•ç”¨å†…å®¹ï¼‰
 }
 
 //////////////////////////////////////////////////////////////////////////
-// ÊäÈë
+// è¾“å…¥
 
 void AfirstTpsDemo002Character::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
-	// ÉèÖÃÓÎÏ·ÃÜÔ¿°ó¶¨
+	// è®¾ç½®æ¸¸æˆå¯†é’¥ç»‘å®š
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
@@ -63,19 +63,19 @@ void AfirstTpsDemo002Character::SetupPlayerInputComponent(class UInputComponent*
 	PlayerInputComponent->BindAxis("MoveForward", this, &AfirstTpsDemo002Character::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AfirstTpsDemo002Character::MoveRight);
 
-	// ÎÒÃÇÓĞÁ½¸ö°æ±¾µÄĞı×ª°ó¶¨£¬¿ÉÒÔ²»Í¬µØ´¦Àí²»Í¬ÀàĞÍµÄÉè±¸
-	// turn¡±¿ØÖÆÌá¹©¾ø¶ÔÔöÁ¿µÄÉè±¸£¬ÈçÊó±ê¡£
-	// ¡°ÖÜ×ªÂÊ¡±ÊÇÖ¸ÎÒÃÇÑ¡Ôñ½«ÆäÊÓÎª±ä»¯ÂÊµÄÉè±¸£¬ÀıÈçÄ£Äâ²Ù×İ¸Ë
+	// æˆ‘ä»¬æœ‰ä¸¤ä¸ªç‰ˆæœ¬çš„æ—‹è½¬ç»‘å®šï¼Œå¯ä»¥ä¸åŒåœ°å¤„ç†ä¸åŒç±»å‹çš„è®¾å¤‡
+	// turnâ€æ§åˆ¶æä¾›ç»å¯¹å¢é‡çš„è®¾å¤‡ï¼Œå¦‚é¼ æ ‡ã€‚
+	// â€œå‘¨è½¬ç‡â€æ˜¯æŒ‡æˆ‘ä»¬é€‰æ‹©å°†å…¶è§†ä¸ºå˜åŒ–ç‡çš„è®¾å¤‡ï¼Œä¾‹å¦‚æ¨¡æ‹Ÿæ“çºµæ†
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AfirstTpsDemo002Character::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AfirstTpsDemo002Character::LookUpAtRate);
 
-	// ÊÖ±ú´¥Ãş×°ÖÃ
+	// æ‰‹æŸ„è§¦æ‘¸è£…ç½®
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AfirstTpsDemo002Character::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AfirstTpsDemo002Character::TouchStopped);
 
-	// VR¶ú»ú¹¦ÄÜ
+	// VRè€³æœºåŠŸèƒ½
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AfirstTpsDemo002Character::OnResetVR);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AfirstTpsDemo002Character::OnFire);
@@ -85,9 +85,9 @@ void AfirstTpsDemo002Character::SetupPlayerInputComponent(class UInputComponent*
 
 void AfirstTpsDemo002Character::OnResetVR()
 {
-	// //Èç¹ûÍ¨¹ıĞé»Ã±à¼­Æ÷ÖĞµÄ¡°Ìí¼Ó¹¦ÄÜ¡±½«firstTpsDemo002Ìí¼Óµ½ÏîÄ¿ÖĞ£¬Ôò²»»á×Ô¶¯´«²¥firstTpsDomo002.Build.csÖĞ¶ÔHeadMountedDisplayµÄÒÀÀµ¹ØÏµ²¢ÇÒ½«µ¼ÖÂÁ´½ÓÆ÷´íÎó¡£
-	// ÄúĞèÒª£º½«¡°HeadMountedDisplay¡±Ìí¼Óµ½[YourProject]¡£Build.cs PublicDependencyModuleNames£¬ÒÔ±ã³É¹¦¹¹½¨£¨Èç¹ûÖ§³ÖVR£¬ÔòÊÊÓÃ£©¡£
-	// »òÕß£º×¢ÊÍ»òÉ¾³ıÏÂÃæ¶ÔResetPorientationAndPositionµÄµ÷ÓÃ£¨Èç¹û²»Ö§³ÖVR£¬ÔòÊÊÓÃ£©
+	// //å¦‚æœé€šè¿‡è™šå¹»ç¼–è¾‘å™¨ä¸­çš„â€œæ·»åŠ åŠŸèƒ½â€å°†firstTpsDemo002æ·»åŠ åˆ°é¡¹ç›®ä¸­ï¼Œåˆ™ä¸ä¼šè‡ªåŠ¨ä¼ æ’­firstTpsDomo002.Build.csä¸­å¯¹HeadMountedDisplayçš„ä¾èµ–å…³ç³»å¹¶ä¸”å°†å¯¼è‡´é“¾æ¥å™¨é”™è¯¯ã€‚
+	// æ‚¨éœ€è¦ï¼šå°†â€œHeadMountedDisplayâ€æ·»åŠ åˆ°[YourProject]ã€‚Build.cs PublicDependencyModuleNamesï¼Œä»¥ä¾¿æˆåŠŸæ„å»ºï¼ˆå¦‚æœæ”¯æŒVRï¼Œåˆ™é€‚ç”¨ï¼‰ã€‚
+	// æˆ–è€…ï¼šæ³¨é‡Šæˆ–åˆ é™¤ä¸‹é¢å¯¹ResetPorientationAndPositionçš„è°ƒç”¨ï¼ˆå¦‚æœä¸æ”¯æŒVRï¼Œåˆ™é€‚ç”¨ï¼‰
 
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
@@ -104,13 +104,13 @@ void AfirstTpsDemo002Character::TouchStopped(ETouchIndex::Type FingerIndex, FVec
 
 void AfirstTpsDemo002Character::TurnAtRate(float Rate)
 {
-	// ¸ù¾İËÙÂÊĞÅÏ¢¼ÆËã´ËÖ¡µÄÔöÁ¿
+	// æ ¹æ®é€Ÿç‡ä¿¡æ¯è®¡ç®—æ­¤å¸§çš„å¢é‡
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AfirstTpsDemo002Character::LookUpAtRate(float Rate)
 {
-	// ¸ù¾İËÙÂÊĞÅÏ¢¼ÆËã´ËÖ¡µÄÔöÁ¿
+	// æ ¹æ®é€Ÿç‡ä¿¡æ¯è®¡ç®—æ­¤å¸§çš„å¢é‡
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -118,11 +118,11 @@ void AfirstTpsDemo002Character::MoveForward(float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
-		// ÕÒ³öÇ°½øµÄ·½Ïò
+		// æ‰¾å‡ºå‰è¿›çš„æ–¹å‘
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// »ñÈ¡ÕıÏòÏòÁ¿
+		// è·å–æ­£å‘å‘é‡
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
 	}
@@ -132,13 +132,13 @@ void AfirstTpsDemo002Character::MoveRight(float Value)
 {
 	if ( (Controller != nullptr) && (Value != 0.0f) )
 	{
-		// ÕÒ³öÄÄÌõÂ·ÊÇÕıÈ·µÄ
+		// æ‰¾å‡ºå“ªæ¡è·¯æ˜¯æ­£ç¡®çš„
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 	
-		// »ñµÃÕıÈ·µÄÏòÁ¿
+		// è·å¾—æ­£ç¡®çš„å‘é‡
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// Ôö¼Ó¸Ã·½ÏòµÄÔË¶¯
+		// å¢åŠ è¯¥æ–¹å‘çš„è¿åŠ¨
 		AddMovementInput(Direction, Value);
 	}
 }
@@ -147,28 +147,28 @@ void AfirstTpsDemo002Character::OnFire()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnFire called!"));
 
-	// ÉäÏßÆğµã£ºÉãÏñ»úÎ»ÖÃ
+	// å°„çº¿èµ·ç‚¹ï¼šæ‘„åƒæœºä½ç½®
 	FVector Start = FollowCamera->GetComponentLocation();
-	// ÉäÏß·½Ïò£ºÉãÏñ»úÇ°·½
+	// å°„çº¿æ–¹å‘ï¼šæ‘„åƒæœºå‰æ–¹
 	FVector ForwardVector = FollowCamera->GetForwardVector();
-	// ÉäÏßÖÕµã£ºÏà»úÇ°·½10000µ¥Î»
+	// å°„çº¿ç»ˆç‚¹ï¼šç›¸æœºå‰æ–¹10000å•ä½
 	FVector End = Start + (ForwardVector * 10000.0f);
 
-	FHitResult HitResult;//´æ´¢ÉäÏß¼ì²âµÄ½á¹ûĞÅÏ¢
-	FCollisionQueryParams Params;//ÅäÖÃ¼ì²â²ÎÊı
-	Params.AddIgnoredActor(this);// ºöÂÔ×ÔÉí
-	//Ö´ĞĞÊµ¼ÊµÄÉäÏß¼ì²â£¬LineTraceSingleByChannel£ºÑØÖ±Ïß¼ì²âÅö×²£¬ECC_Visibility£ºÊ¹ÓÃVisibilityÅö×²Í¨µÀ
-	//	·µ»ØboolÖµ±íÊ¾ÊÇ·ñÃüÖĞÎïÌå
+	FHitResult HitResult;//å­˜å‚¨å°„çº¿æ£€æµ‹çš„ç»“æœä¿¡æ¯
+	FCollisionQueryParams Params;//é…ç½®æ£€æµ‹å‚æ•°
+	Params.AddIgnoredActor(this);// å¿½ç•¥è‡ªèº«
+	//æ‰§è¡Œå®é™…çš„å°„çº¿æ£€æµ‹ï¼ŒLineTraceSingleByChannelï¼šæ²¿ç›´çº¿æ£€æµ‹ç¢°æ’ï¼ŒECC_Visibilityï¼šä½¿ç”¨Visibilityç¢°æ’é€šé“
+	//	è¿”å›boolå€¼è¡¨ç¤ºæ˜¯å¦å‘½ä¸­ç‰©ä½“
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
-	{ //´¦ÀíÃüÖĞµÄÎïÌå£¬Ê×ÏÈÑéÖ¤ÃüÖĞµÄActorÊÇ·ñÓĞĞ§
+	{ //å¤„ç†å‘½ä¸­çš„ç‰©ä½“ï¼Œé¦–å…ˆéªŒè¯å‘½ä¸­çš„Actoræ˜¯å¦æœ‰æ•ˆ
 		if (HitResult.Actor.IsValid())
 		{
-			//Êä³öÃüÖĞÎïÌåµÄÃû³Æ£¨µ÷ÊÔÓÃ£©
+			//è¾“å‡ºå‘½ä¸­ç‰©ä½“çš„åç§°ï¼ˆè°ƒè¯•ç”¨ï¼‰
 			UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitResult.Actor->GetName());
 
-			// ÅĞ¶ÏÊÇ·ñÊÇ°Ğ×Ó£¬³¢ÊÔ½«ÃüÖĞµÄActor×ª»»ÎªÄ¿±êÀàĞÍAATargetActor
+			// åˆ¤æ–­æ˜¯å¦æ˜¯é¶å­ï¼Œå°è¯•å°†å‘½ä¸­çš„Actorè½¬æ¢ä¸ºç›®æ ‡ç±»å‹AATargetActor
 			AATargetActor* Target = Cast<AATargetActor>(HitResult.Actor.Get());
-			//Èç¹ûÊÇÄ¿±êÀàĞÍ£¬µ÷ÓÃÆäOnHitByBullet()·½·¨
+			//å¦‚æœæ˜¯ç›®æ ‡ç±»å‹ï¼Œè°ƒç”¨å…¶OnHitByBullet()æ–¹æ³•
 			if (Target)
 			{
 				Target->OnHitByBullet();
@@ -176,6 +176,6 @@ void AfirstTpsDemo002Character::OnFire()
 		}
 	}
 
-	// µ÷ÊÔÏß
+	// è°ƒè¯•çº¿
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 1.0f);
 }

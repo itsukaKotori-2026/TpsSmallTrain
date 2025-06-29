@@ -1,25 +1,28 @@
-﻿//在“项目设置”的“描述”页面中填写您的版权声明。
+// Fill out your copyright notice in the Description page of Project Settings.
 
-//引入 TargetActor.h 头文件，确保这个.cpp 文件知道类和成员变量的声明。
-#include "ATargetActor.h"
+
+#include "TargetActor.h"
+//myadd
 #include "UObject/ConstructorHelpers.h"
 
-// 构造函数
-AATargetActor::AATargetActor()
+// Sets default values
+ATargetActor::ATargetActor()
 {
- 	// 表示这个 Actor 启用了 Tick，每一帧都会调用 Tick 函数。
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	/*创建一个 静态网格体组件 作为靶子的 3D 模型。
-	把它设置为 根组件，所以它决定了 Actor 的位置、旋转、缩放。*/
+	//myadd
 	TargetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TargetMesh"));
 	RootComponent = TargetMesh;
-
 	// 自动加载引擎内置 Cylinder 模型，如果加载成功，将其赋给 TargetMesh。
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
 	if (MeshAsset.Succeeded())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Mesh loaded successfully."));
 		TargetMesh->SetStaticMesh(MeshAsset.Object);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Mesh load FAILED."));
 	}
 	// 自动加载引擎内置材质，如果加载成功，将其赋给 TargetMesh。
 	static ConstructorHelpers::FObjectFinder<UMaterial> MaterialAsset(TEXT("/Engine/BasicShapes/BasicShapeMaterial"));
@@ -28,7 +31,9 @@ AATargetActor::AATargetActor()
 		TargetMesh->SetMaterial(0, MaterialAsset.Object);
 	}
 	// 设置缩放，像个靶子的圆盘
-	TargetMesh->SetWorldScale3D(FVector(0.5f, 0.5f, 0.05f));
+	TargetMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 0.05f));
+	// 新增旋转，让圆柱“立起来”
+	TargetMesh->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
 	// 启用碰撞
 	//开启查询和物理碰撞（既能检测射线 / 重叠，也能物理交互）
 	//设置对象类型为 WorldDynamic（动态物体，比如可以移动的物体）
@@ -44,22 +49,23 @@ AATargetActor::AATargetActor()
 	//FallSpeed = 100.0f：倒下的旋转速度，单位角度 / 秒。
 	bIsFalling = false;
 	FallSpeed = 100.0f;
-
 }
 
-//  游戏开始时被调用，这里没有额外逻辑，只是调用基类 BeginPlay()。
-void AATargetActor::BeginPlay()
+// Called when the game starts or when spawned
+void ATargetActor::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("BeginPlay TargetMesh forward: %s"), *TargetMesh->GetForwardVector().ToString());
-	UE_LOG(LogTemp, Warning, TEXT("BeginPlay TargetMesh up: %s"), *TargetMesh->GetUpVector().ToString());
+
+	UE_LOG(LogTemp, Warning, TEXT("Target mesh initial forward vector: %s"), *TargetMesh->GetForwardVector().ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Target mesh initial up vector: %s"), *TargetMesh->GetUpVector().ToString());
 	
 }
 
-// 每帧更新靶子的状态，实现被击中后的倒下动画。
-void AATargetActor::Tick(float DeltaTime)
+// Called every frame
+void ATargetActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//myadd
 	if (bIsFalling) {//检查 bIsFalling 是否为 true（是否被击中）。
 
 		// 获取当前旋转角度
@@ -76,17 +82,18 @@ void AATargetActor::Tick(float DeltaTime)
 		}
 		// 更新旋转
 		TargetMesh->SetRelativeRotation(NewRotation);
-		UE_LOG(LogTemp, Warning, TEXT("Target is falling... Roll: %.2f"), NewRotation.Roll);
+		UE_LOG(LogTemp, Warning, TEXT("Target is falling... Current roll: %.2f"), NewRotation.Roll);
 
 	}
 }
+//myadd
 //当靶子被子弹击中时调用，启动倒下动画。由外部（如角色的 OnFire() 射线检测）调用。
-void AATargetActor::OnHitByBullet()
+void ATargetActor::OnHitByBullet()
 {
 	if (!bIsFalling) //仅当靶子未倒下时（!bIsFalling）才会触发。
 	{
 		bIsFalling = true; // 触发倒下
-		UE_LOG(LogTemp, Warning, TEXT("Target starts falling..."));
+		UE_LOG(LogTemp, Warning, TEXT("Target hit by bullet - starting fall animation..."));
 	}
 }
 

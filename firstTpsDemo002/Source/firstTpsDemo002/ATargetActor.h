@@ -1,4 +1,4 @@
-// �ڡ���Ŀ���á��ġ�������ҳ������д���İ�Ȩ������
+﻿// 在“项目设置”的“描述”页面中填写您的版权声明。
 
 #pragma once
 
@@ -12,29 +12,29 @@ class FIRSTTPSDEMO002_API AATargetActor : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Ϊ�˲����ߵ���������Ĭ��ֵ
+	// 为此参与者的属性设置默认值
 	AATargetActor();
 
 protected:
-	// ����Ϸ��ʼ������ʱ����
+	// 在游戏开始或生成时调用
 	virtual void BeginPlay() override;
 
 public:	
-	// ����ÿһ֡
+	// 调用每一帧
 	virtual void Tick(float DeltaTime) override;
-	// ����ʱ����
+	// 命中时调用
 	void OnHitByBullet();
 private:
-	//UPROPERTY������������������뷴��ϵͳ�����л��ȡ�
-	//VisibleAnywhere����ʾ�� �༭���У���ͼ��������壩�ɼ��������ɱ༭��
+	//UPROPERTY：告诉引擎这变量参与反射系统、序列化等。
+	//VisibleAnywhere：表示在 编辑器中（蓝图或详情面板）可见，但不可编辑。
 	UPROPERTY(VisibleAnywhere)
 
-	//����һ��ָ�� ��̬��������� ��ָ�롣 ������������ӵ���ۣ�3D ģ�ͣ���
+	//这是一个指向 静态网格体组件 的指针。 它代表这个靶子的外观（3D 模型）。
 	UStaticMeshComponent* TargetMesh;
-	//����һ������ֵ�� true ��ʾ�������ڵ��� false ��ʾ���Ӿ�ֹ
+	//这是一个布尔值， true 表示靶子正在倒下 false 表示靶子静止
 	bool bIsFalling;
-	//����һ����ά��������ʾ ���ӵ��µķ��� ���磺FVector(1, 0, 0) �ͱ�ʾ�� X ���������¡�
+	//这是一个三维向量，表示 靶子倒下的方向。 比如：FVector(1, 0, 0) 就表示沿 X 轴正方向倒下。
 	FVector FallDirection;
-	//һ������������ʾ�� ���ӵ���ʱ���ٶȣ���λͨ���ǵ�λ / �룩��
+	//一个浮点数，表示： 靶子倒下时的速度（单位通常是单位 / 秒）。
 	float FallSpeed;
 };
