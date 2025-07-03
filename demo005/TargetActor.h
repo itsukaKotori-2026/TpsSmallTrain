@@ -7,7 +7,7 @@
 #include "TargetActor.generated.h"
 
 UCLASS()
-class DEMO003TRAIN005_API ATargetActor : public AActor
+class DEMO005_API ATargetActor : public AActor
 {
 	GENERATED_BODY()
 	
@@ -16,7 +16,7 @@ public:
 	ATargetActor();
 
 	void OnHitByBullet();
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
