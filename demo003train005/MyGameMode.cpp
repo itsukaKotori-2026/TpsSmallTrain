@@ -32,7 +32,7 @@ void AMyGameMode::BeginPlay()
     {
         FVector SpawnLocation(0.f, 0.f, 300.f); // 
         FRotator SpawnRotation = FRotator(0.f, 0.f, 0.f);
-        UE_LOG(LogTemp, Warning, TEXT("Spawning at location: %s"), *SpawnLocation.ToString());
+
         FActorSpawnParameters SpawnParams;
 
         AActor* SpawnedTarget = World->SpawnActor<ATargetActor>(
@@ -42,9 +42,6 @@ void AMyGameMode::BeginPlay()
             SpawnParams
         );
 
-        if (SpawnedTarget)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Successfully generated target!"));
-        }
+  
     }
 }

@@ -41,7 +41,6 @@ ATargetActor::ATargetActor()
 	bIsFalling = false;
 	FallSpeed = 100.0f;
 
-	UE_LOG(LogTemp, Warning, TEXT("ATargetActor() end from class: %s"), *GetClass()->GetName());
 }
 
 // Called when the game starts or when spawned

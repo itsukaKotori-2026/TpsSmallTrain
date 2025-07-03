@@ -14,7 +14,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 // Ademo003train005Character
-DEFINE_LOG_CATEGORY_STATIC(LogMyChar, Log, All);
+
 Ademo003train005Character::Ademo003train005Character()
 {
 	// Set size for collision capsule
@@ -49,7 +49,9 @@ Ademo003train005Character::Ademo003train005Character()
 	PrimaryActorTick.bCanEverTick = true; // 开启 Tick 调用
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-	UE_LOG(LogMyChar, Log, TEXT("角色构造完成：初始化成功"));
+
+	
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -87,7 +89,7 @@ void Ademo003train005Character::SetupPlayerInputComponent(class UInputComponent*
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &Ademo003train005Character::StartAiming);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &Ademo003train005Character::StopAiming);
 
-	UE_LOG(LogMyChar, Log, TEXT("输入组件绑定完成"));
+
 }
 
 
@@ -169,7 +171,7 @@ void Ademo003train005Character::StartAiming()
 	CameraBoom->TargetArmLength = 150.f;  // 拉近摄像机
 	CameraBoom->SocketOffset = FVector(0.f, 50.f, 10.f);  // 偏右肩
 
-	UE_LOG(LogMyChar, Log, TEXT("进入瞄准状态"));
+
 }
 
 void Ademo003train005Character::StopAiming()
@@ -178,7 +180,7 @@ void Ademo003train005Character::StopAiming()
 	CameraBoom->TargetArmLength = 300.f;  // 恢复默认
 	CameraBoom->SocketOffset = FVector::ZeroVector;
 
-	UE_LOG(LogMyChar, Log, TEXT("退出瞄准状态"));
+
 }
 void Ademo003train005Character::Tick(float DeltaTime)
 {
@@ -192,17 +194,25 @@ void Ademo003train005Character::Tick(float DeltaTime)
 	FVector TargetOffset = bIsAiming ? FVector(0.f, 50.f, 10.f) : DefaultOffset;
 	CameraBoom->SocketOffset = FMath::VInterpTo(CameraBoom->SocketOffset, TargetOffset, DeltaTime, 10.f);
 
-	UE_LOG(LogMyChar, Verbose, TEXT("Tick: ArmLength=%.2f, Offset=(%.2f, %.2f, %.2f)"),
-		CameraBoom->TargetArmLength,
-		CameraBoom->SocketOffset.X,
-		CameraBoom->SocketOffset.Y,
-		CameraBoom->SocketOffset.Z);
-
+	if (EquippedWeapon)
+	{
+		FVector WeaponLocation = EquippedWeapon->GetActorLocation();
+		UE_LOG(LogTemp, Warning, TEXT("Weapon location during tick: %s"), *WeaponLocation.ToString());
+	}
 }
 void Ademo003train005Character::BeginPlay()
 {
 	Super::BeginPlay();
-
+	// 假设 AAWeapon 是你的武器基类，AWeaponClass 是一个继承自 AAWeapon 的子类
+	DefaultWeaponClass = AAWeapon::StaticClass();
+	if (DefaultWeaponClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Successfully set DefaultWeaponClass to: %s"), *DefaultWeaponClass->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to set DefaultWeaponClass!"));
+	}
 	if (DefaultWeaponClass)
 	{
 		FActorSpawnParameters SpawnParams;
@@ -213,11 +223,21 @@ void Ademo003train005Character::BeginPlay()
 
 		if (EquippedWeapon)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Weapon successfully spawned at location: %s"), *EquippedWeapon->GetActorLocation().ToString());
+
 			EquippedWeapon->AttachToComponent(
 				GetMesh(),
 				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 				FName("WeaponSocket") // Socket 名必须提前在骨骼资源里建好
 			);
+
+			// 输出武器位置，确认是否正确附加
+			FVector WeaponLocation = EquippedWeapon->GetActorLocation();
+			UE_LOG(LogTemp, Warning, TEXT("Weapon attached at: %s"), *WeaponLocation.ToString());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create EquippedWeapon!"));
 		}
 	}
 }
