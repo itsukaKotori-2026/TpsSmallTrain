@@ -1,11 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
-#include "demo003train005Character.generated.h"
 #include "AWeapon.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-
+#include "demo003train005Character.generated.h"
 
 UCLASS(config=Game)
 class Ademo003train005Character : public ACharacter
@@ -66,11 +65,7 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 	virtual void BeginPlay() override;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USkeletalMeshComponent* SkeletalMeshComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-	TSubclassOf<UAnimInstance> AnimInstanceClass;
+	
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

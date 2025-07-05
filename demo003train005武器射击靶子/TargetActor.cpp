@@ -57,29 +57,26 @@ void ATargetActor::Tick(float DeltaTime)
 
 	if (bIsFalling) {
 		FRotator NewRotation = TargetMesh->GetRelativeRotation();
-		NewRotation.Roll -= FallSpeed * DeltaTime;
+		NewRotation.Roll += FallSpeed * DeltaTime;
 
-		// 到达目标角度（水平），就停止
-		if (NewRotation.Roll <= 0.0f)
+		if (NewRotation.Roll >= 0.0f)
 		{
 			NewRotation.Roll = 0.0f;
 			bIsFalling = false;
-			UE_LOG(LogTemp, Warning, TEXT("Target finished falling."));
 		}
 
 		TargetMesh->SetRelativeRotation(NewRotation);
-
-		UE_LOG(LogTemp, Warning, TEXT("Target is falling... Current Roll: %.2f"), NewRotation.Roll);
+		UE_LOG(LogTemp, Warning, TEXT("Target is falling... Current roll: %.2f"), NewRotation.Roll);
 	}
 }
 
 void ATargetActor::OnHitByBullet()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnHitByBullet() start from class: %s"), *GetClass()->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("OnHitByBullet() start from class: %s"), *GetClass()->GetName());
 	if (!bIsFalling)
 	{
 		bIsFalling = true;
 		UE_LOG(LogTemp, Warning, TEXT("Target hit by bullet目标被子弹击中 - starting fall animation开始倒下动画..."));
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("OnHitByBullet() end from class: %s"), *GetClass()->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("OnHitByBullet() end from class: %s"), *GetClass()->GetName());
 }

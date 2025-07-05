@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-#include "UMyAnimInstance.h"
-#include "demo003train005Character.h"
 
+#include "demo003train005Character.h"
 #include "AWeapon.h" 
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
@@ -12,12 +11,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
 #include "TargetActor.h"
-#include "Kismet/GameplayStatics.h"
-
-
-#include "GameFramework/Character.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "UObject/ConstructorHelpers.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Ademo003train005Character
@@ -56,6 +49,8 @@ Ademo003train005Character::Ademo003train005Character()
 	PrimaryActorTick.bCanEverTick = true; // 开启 Tick 调用
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	
 
 }
 
@@ -161,14 +156,14 @@ void Ademo003train005Character::MoveRight(float Value)
 }
 void Ademo003train005Character::OnFire()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnFire() start , class: %s"), *GetClass()->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("OnFire() start , class: %s"), *GetClass()->GetName());
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->Fire();
 	}
 
 
-	//UE_LOG(LogTemp, Warning, TEXT("OnFire() end , class: %s"), *GetClass()->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("OnFire() end , class: %s"), *GetClass()->GetName());
 }
 void Ademo003train005Character::StartAiming()
 {
@@ -202,38 +197,22 @@ void Ademo003train005Character::Tick(float DeltaTime)
 	if (EquippedWeapon)
 	{
 		FVector WeaponLocation = EquippedWeapon->GetActorLocation();
-		//UE_LOG(LogTemp, Warning, TEXT("Weapon location during tick: %s"), *WeaponLocation.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("Weapon location during tick: %s"), *WeaponLocation.ToString());
 	}
 }
 void Ademo003train005Character::BeginPlay()
 {
 	Super::BeginPlay();
-
-	USkeletalMesh* NewMesh = LoadObject<USkeletalMesh>(nullptr, TEXT("SkeletalMesh'/Game/Man/Mesh/Full/SK_Man_Full_01.SK_Man_Full_01'"));
-
-	if (NewMesh)
+	// 假设 AAWeapon 是你的武器基类，AWeaponClass 是一个继承自 AAWeapon 的子类
+	DefaultWeaponClass = AAWeapon::StaticClass();
+	if (DefaultWeaponClass)
 	{
-		// 设置新的 Skeletal Mesh
-		GetMesh()->SetSkeletalMesh(NewMesh);
-		UE_LOG(LogTemp, Warning, TEXT("New Skeletal Mesh: %s"), *NewMesh->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Successfully set DefaultWeaponClass to: %s"), *DefaultWeaponClass->GetName());
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to load Skeletal Mesh."));
+		UE_LOG(LogTemp, Error, TEXT("Failed to set DefaultWeaponClass!"));
 	}
-
-	// 设置动画实例类为UUMyAnimInstance
-	//GetMesh()->SetAnimInstanceClass(UUMyAnimInstance::StaticClass());
-	if (GetMesh()->GetAnimInstance() == nullptr || !GetMesh()->GetAnimInstance()->IsA(UUMyAnimInstance::StaticClass()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Setting AnimInstance to: %s"), *UUMyAnimInstance::StaticClass()->GetName());
-		// 只在需要时重新设置
-		GetMesh()->SetAnimInstanceClass(UUMyAnimInstance::StaticClass());
-	}
-
-
-	// 假设 AAWeapon 是你的武器基类，AWeaponClass 是一个继承自 AAWeapon 的子类
-	DefaultWeaponClass = AAWeapon::StaticClass();
 	if (DefaultWeaponClass)
 	{
 		FActorSpawnParameters SpawnParams;
@@ -244,18 +223,14 @@ void Ademo003train005Character::BeginPlay()
 
 		if (EquippedWeapon)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("Weapon successfully spawned at location: %s"), *EquippedWeapon->GetActorLocation().ToString());
+			UE_LOG(LogTemp, Warning, TEXT("Weapon successfully spawned at location: %s"), *EquippedWeapon->GetActorLocation().ToString());
 
 			EquippedWeapon->AttachToComponent(
 				GetMesh(),
 				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 				FName("WeaponSocket") // Socket 名必须提前在骨骼资源里建好
 			);
-			// 设置武器的相对位置和旋转
-			FVector LocationOffset = FVector(0.f, 0.f, 0.f); // 调整武器位置
-			FRotator RotationOffset = FRotator(0.f, 90.f, 0.f); // 初步旋转，视模型再调整
-			EquippedWeapon->SetActorRelativeLocation(LocationOffset);
-			EquippedWeapon->SetActorRelativeRotation(RotationOffset);
+
 			// 输出武器位置，确认是否正确附加
 			FVector WeaponLocation = EquippedWeapon->GetActorLocation();
 			UE_LOG(LogTemp, Warning, TEXT("Weapon attached at: %s"), *WeaponLocation.ToString());

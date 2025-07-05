@@ -2,11 +2,9 @@
 
 
 #include "AWeapon.h"
-#include "TargetActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/Character.h"
+
 // Sets default values
 AAWeapon::AAWeapon()
 {
@@ -30,38 +28,18 @@ AAWeapon::AAWeapon()
 }
 void AAWeapon::Fire()
 {
-    ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
-    if (!OwnerCharacter) return;
-
-    // 获取摄像机组件
-    UCameraComponent* CameraComp = OwnerCharacter->FindComponentByClass<UCameraComponent>();
-    if (!CameraComp) return;
-
-    FVector Start = CameraComp->GetComponentLocation();
-    FVector Direction = CameraComp->GetForwardVector();
-    FVector End = Start + Direction * 10000;
-
+    // 获取射击的起始位置，通常是枪口的 Socket
+    FVector Start = Mesh->GetSocketLocation("Muzzle");
+    FVector End = Start + Mesh->GetForwardVector() * 10000; // 射程可以调整，10000是一个大的值
+    // 创建命中结果
     FHitResult Hit;
     FCollisionQueryParams Params;
-    Params.AddIgnoredActor(this);
-    Params.AddIgnoredActor(OwnerCharacter); // 忽略自己
-
+    Params.AddIgnoredActor(this);// 忽略当前武器的碰撞
+    // 执行射线检测
     if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
     {
+        // 如果命中目标，画一条红色的调试线
         DrawDebugLine(GetWorld(), Start, Hit.Location, FColor::Red, false, 1.f);
-        UE_LOG(LogTemp, Warning, TEXT("Hit something at: %s"), *Hit.Location.ToString());
-
-        // 
-        ATargetActor* Target = Cast<ATargetActor>(Hit.GetActor());
-        if (Target)
-        {
-            Target->OnHitByBullet(); //通知靶子被击中
-        }
-    }
-    else
-    {
-        DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.f); // 没命中也画线
-        UE_LOG(LogTemp, Warning, TEXT("Missed - tracing to: %s"), *End.ToString());
     }
 }
 
