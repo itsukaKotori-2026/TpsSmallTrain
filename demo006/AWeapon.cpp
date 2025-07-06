@@ -55,17 +55,25 @@ void AAWeapon::Tick(float DeltaTime)
 
 void AAWeapon::Fire()
 {
-    // 获取射击的起始位置，通常是枪口的 Socket
     ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
     if (!OwnerCharacter) return;
 
     // 获取摄像机组件
     UCameraComponent* CameraComp = OwnerCharacter->FindComponentByClass<UCameraComponent>();
     if (!CameraComp) return;
-
+    // 获取扩散值
+    float SpreadAngle = 0.0f;
+    Ademo006Character* Shooter = Cast<Ademo006Character>(OwnerCharacter);
+    if (Shooter)
+    {
+        SpreadAngle = Shooter->CrosshairSpread;
+    }
     FVector Start = CameraComp->GetComponentLocation();
     FVector Direction = CameraComp->GetForwardVector();
     FVector End = Start + Direction * 10000;
+    // 应用扩散：生成一个在锥体内的方向
+    FVector ShootDir = FMath::VRandCone(Forward, FMath::DegreesToRadians(SpreadAngle));
+    FVector End = Start + ShootDir * 10000.0f;
 
     FHitResult Hit;
     FCollisionQueryParams Params;
@@ -88,5 +96,28 @@ void AAWeapon::Fire()
     {
         DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.f); // 没命中也画线
         UE_LOG(LogTemp, Warning, TEXT("Missed - tracing to: %s"), *End.ToString());
+    }
+}
+int32 AAWeapon::GetCurrentAmmo() const
+{
+    return CurrentAmmo;
+}
+int32 AAWeapon::GetTotalAmmo() const
+{
+    return TotalAmmo;
+}
+
+void AAWeapon::Reload()
+{
+    int32 AmmoNeeded = MaxAmmo - CurrentAmmo;
+
+    if (AmmoNeeded > 0 && TotalAmmo > 0)
+    {
+        int32 AmmoToReload = FMath::Min(AmmoNeeded, TotalAmmo);
+        CurrentAmmo += AmmoToReload;
+        TotalAmmo -= AmmoToReload;
+
+        UE_LOG(LogTemp, Warning, TEXT("Reloaded %d ammo. Current: %d, Total: %d"),
+            AmmoToReload, CurrentAmmo, TotalAmmo);
     }
 }

@@ -1,13 +1,14 @@
- // Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 #include "AWeapon.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "demo003train005Character.generated.h"
+#include "demo006Character.generated.h"
+
 
 UCLASS(config=Game)
-class Ademo003train005Character : public ACharacter
+class Ademo006Character : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -19,7 +20,7 @@ class Ademo003train005Character : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 public:
-	Ademo003train005Character();
+	Ademo006Character();
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -28,7 +29,8 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
-	virtual void Tick(float DeltaTime) override;
+
+
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -57,15 +59,21 @@ protected:
 
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
-	void StartAiming();
-	void StopAiming();
-	void OnFire();
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
+
 	virtual void BeginPlay() override;
-	
+	virtual void Tick(float DeltaTime) override;
+	void StartAiming();
+	void StopAiming();
+	void StartFire();
+	void StopFire();
+	void OnFire();
+	void OnReload();
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -79,9 +87,21 @@ public:
 	/** 默认武器蓝图类 */
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<AAWeapon> DefaultWeaponClass;  // 用于指定默认武器蓝图
+
+	class AAWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
+
 private:
 	bool bIsAiming; // 是否正在瞄准
+	// 控制自动开火
+	FTimerHandle FireTimerHandle;
+	// 控制准星扩散
+	float CrosshairSpread = 0.0f;
+	float MaxCrosshairSpread = 30.0f;
+	float SpreadIncreaseRate = 30.0f;   // 每秒增加多少
+	float SpreadDecreaseRate = 20.0f;   // 每秒减少多少
+	bool bIsFiring = false;
 
-	
+	// 射击间隔（单位：秒）例如 0.1f 为每秒10发
+	float FireRate = 0.1f;
 };
 
