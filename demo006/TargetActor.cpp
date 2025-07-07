@@ -68,16 +68,6 @@ void ATargetActor::Tick(float DeltaTime)
 		TargetMesh->SetRelativeRotation(NewRotation);
 
 		UE_LOG(LogTemp, Warning, TEXT("Target is falling... Current Roll: %.2f"), NewRotation.Roll);
-		//NewRotation.Roll += FallSpeed * DeltaTime;
-
-		//if (NewRotation.Roll >= 0.0f)
-		//{
-		//	NewRotation.Roll = 0.0f;
-		//	bIsFalling = false;
-		//}
-
-		//TargetMesh->SetRelativeRotation(NewRotation);
-		//UE_LOG(LogTemp, Warning, TEXT("Target is falling... Current roll: %.2f"), NewRotation.Roll);
 	}
 }
 
