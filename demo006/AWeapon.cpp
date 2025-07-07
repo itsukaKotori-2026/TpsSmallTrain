@@ -14,10 +14,10 @@ AAWeapon::AAWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-    // ´´½¨ÎäÆ÷Íø¸ñ×é¼ş
+    // åˆ›å»ºæ­¦å™¨ç½‘æ ¼ç»„ä»¶
     Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
     RootComponent = Mesh;
-    // ÉèÖÃÍø¸ñÎª KA47 ÎäÆ÷
+    // è®¾ç½®ç½‘æ ¼ä¸º KA47 æ­¦å™¨
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> KA47Mesh(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/Ka47/SK_KA47.SK_KA47"));
 
     if (KA47Mesh.Succeeded())
@@ -26,7 +26,7 @@ AAWeapon::AAWeapon()
         Mesh->SetSkeletalMesh(KA47Mesh.Object);
         Mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
     }
-    // Ä¬ÈÏµ¯Ò©
+    // é»˜è®¤å¼¹è¯
     CurrentAmmo = MaxAmmo;
 }
 
@@ -58,10 +58,10 @@ void AAWeapon::Fire()
     ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
     if (!OwnerCharacter) return;
 
-    // »ñÈ¡ÉãÏñ»ú×é¼ş
+    // è·å–æ‘„åƒæœºç»„ä»¶
     UCameraComponent* CameraComp = OwnerCharacter->FindComponentByClass<UCameraComponent>();
     if (!CameraComp) return;
-    // »ñÈ¡À©É¢Öµ
+    // è·å–æ‰©æ•£å€¼
     float SpreadAngle = 0.0f;
     Ademo006Character* Shooter = Cast<Ademo006Character>(OwnerCharacter);
     if (Shooter)
@@ -70,15 +70,15 @@ void AAWeapon::Fire()
     }
     FVector Start = CameraComp->GetComponentLocation();
     FVector Direction = CameraComp->GetForwardVector();
-    FVector End = Start + Direction * 10000;
-    // Ó¦ÓÃÀ©É¢£ºÉú³ÉÒ»¸öÔÚ×¶ÌåÄÚµÄ·½Ïò
+
+    // åº”ç”¨æ‰©æ•£ï¼šç”Ÿæˆä¸€ä¸ªåœ¨é”¥ä½“å†…çš„æ–¹å‘
     FVector ShootDir = FMath::VRandCone(Forward, FMath::DegreesToRadians(SpreadAngle));
     FVector End = Start + ShootDir * 10000.0f;
 
     FHitResult Hit;
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(this);
-    Params.AddIgnoredActor(OwnerCharacter); // ºöÂÔ×Ô¼º
+    Params.AddIgnoredActor(OwnerCharacter); // å¿½ç•¥è‡ªå·±
 
     if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
     {
@@ -89,12 +89,12 @@ void AAWeapon::Fire()
         ATargetActor* Target = Cast<ATargetActor>(Hit.GetActor());
         if (Target)
         {
-            Target->OnHitByBullet(); //Í¨Öª°Ğ×Ó±»»÷ÖĞ
+            Target->OnHitByBullet(); //é€šçŸ¥é¶å­è¢«å‡»ä¸­
         }
     }
     else
     {
-        DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.f); // Ã»ÃüÖĞÒ²»­Ïß
+        DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.f); // æ²¡å‘½ä¸­ä¹Ÿç”»çº¿
         UE_LOG(LogTemp, Warning, TEXT("Missed - tracing to: %s"), *End.ToString());
     }
 }
