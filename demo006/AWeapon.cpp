@@ -72,7 +72,7 @@ void AAWeapon::Fire()
     FVector Direction = CameraComp->GetForwardVector();
 
     // 应用扩散：生成一个在锥体内的方向
-    FVector ShootDir = FMath::VRandCone(Forward, FMath::DegreesToRadians(SpreadAngle));
+    FVector ShootDir = FMath::VRandCone(Direction, FMath::DegreesToRadians(SpreadAngle));
     FVector End = Start + ShootDir * 10000.0f;
 
     FHitResult Hit;
