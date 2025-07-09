@@ -21,23 +21,23 @@ ATargetActor::ATargetActor()
 	{
 		TargetMesh->SetMaterial(0, MaterialAsset.Object);
 	}
-	// ÉèÖÃËõ·Å£¬Ïñ¸ö°Ğ×ÓµÄÔ²ÅÌ
+	// è®¾ç½®ç¼©æ”¾ï¼Œåƒä¸ªé¶å­çš„åœ†ç›˜
 	TargetMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 0.05f));
-	// ĞÂÔöĞı×ª£¬ÈÃÔ²Öù¡°Á¢ÆğÀ´¡±
+	// æ–°å¢æ—‹è½¬ï¼Œè®©åœ†æŸ±â€œç«‹èµ·æ¥â€
 	TargetMesh->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
-	// ÆôÓÃÅö×²
-	//¿ªÆô²éÑ¯ºÍÎïÀíÅö×²£¨¼ÈÄÜ¼ì²âÉäÏß / ÖØµş£¬Ò²ÄÜÎïÀí½»»¥£©
-	//ÉèÖÃ¶ÔÏóÀàĞÍÎª WorldDynamic£¨¶¯Ì¬ÎïÌå£¬±ÈÈç¿ÉÒÔÒÆ¶¯µÄÎïÌå£©
-	//¶ÔËùÓĞÅö×²Í¨µÀ×èµ²£¨×Óµ¯¡¢½ÇÉ«¡¢ÉäÏß¶¼»á±»µ²×¡£©
+	// å¯ç”¨ç¢°æ’
+	//å¼€å¯æŸ¥è¯¢å’Œç‰©ç†ç¢°æ’ï¼ˆæ—¢èƒ½æ£€æµ‹å°„çº¿ / é‡å ï¼Œä¹Ÿèƒ½ç‰©ç†äº¤äº’ï¼‰
+	//è®¾ç½®å¯¹è±¡ç±»å‹ä¸º WorldDynamicï¼ˆåŠ¨æ€ç‰©ä½“ï¼Œæ¯”å¦‚å¯ä»¥ç§»åŠ¨çš„ç‰©ä½“ï¼‰
+	//å¯¹æ‰€æœ‰ç¢°æ’é€šé“é˜»æŒ¡ï¼ˆå­å¼¹ã€è§’è‰²ã€å°„çº¿éƒ½ä¼šè¢«æŒ¡ä½ï¼‰
 	TargetMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TargetMesh->SetCollisionObjectType(ECC_WorldDynamic);
 	TargetMesh->SetCollisionResponseToAllChannels(ECR_Block);
 
-	// È·±£ÎïÀíÃ»ÓĞ¸ÉÈÅ SetActorRotation
+	// ç¡®ä¿ç‰©ç†æ²¡æœ‰å¹²æ‰° SetActorRotation
 	TargetMesh->SetSimulatePhysics(false);
-	//  ³õÊ¼»¯£º
-	//bIsFalling = false£º¿ªÊ¼Ê±°Ğ×Ó²»µ¹ÏÂ¡£
-	//FallSpeed = 100.0f£ºµ¹ÏÂµÄĞı×ªËÙ¶È£¬µ¥Î»½Ç¶È / Ãë¡£
+	//  åˆå§‹åŒ–ï¼š
+	//bIsFalling = falseï¼šå¼€å§‹æ—¶é¶å­ä¸å€’ä¸‹ã€‚
+	//FallSpeed = 100.0fï¼šå€’ä¸‹çš„æ—‹è½¬é€Ÿåº¦ï¼Œå•ä½è§’åº¦ / ç§’ã€‚
 	bIsFalling = false;
 	FallSpeed = 100.0f;
 }
@@ -57,7 +57,7 @@ void ATargetActor::Tick(float DeltaTime)
 		FRotator NewRotation = TargetMesh->GetRelativeRotation();
 		NewRotation.Roll -= FallSpeed * DeltaTime;
 
-		// µ½´ïÄ¿±ê½Ç¶È£¨Ë®Æ½£©£¬¾ÍÍ£Ö¹
+		// åˆ°è¾¾ç›®æ ‡è§’åº¦ï¼ˆæ°´å¹³ï¼‰ï¼Œå°±åœæ­¢
 		if (NewRotation.Roll <= 0.0f)
 		{
 			NewRotation.Roll = 0.0f;
@@ -68,27 +68,14 @@ void ATargetActor::Tick(float DeltaTime)
 		TargetMesh->SetRelativeRotation(NewRotation);
 
 		UE_LOG(LogTemp, Warning, TEXT("Target is falling... Current Roll: %.2f"), NewRotation.Roll);
-		//NewRotation.Roll += FallSpeed * DeltaTime;
-
-		//if (NewRotation.Roll >= 0.0f)
-		//{
-		//	NewRotation.Roll = 0.0f;
-		//	bIsFalling = false;
-		//}
-
-		//TargetMesh->SetRelativeRotation(NewRotation);
-		//UE_LOG(LogTemp, Warning, TEXT("Target is falling... Current roll: %.2f"), NewRotation.Roll);
 	}
 }
 
 
 void ATargetActor::OnHitByBullet()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnHitByBullet() start from class: %s"), *GetClass()->GetName());
 	if (!bIsFalling)
 	{
 		bIsFalling = true;
-		UE_LOG(LogTemp, Warning, TEXT("Target hit by bulletÄ¿±ê±»×Óµ¯»÷ÖĞ - starting fall animation¿ªÊ¼µ¹ÏÂ¶¯»­..."));
 	}
-	UE_LOG(LogTemp, Warning, TEXT("OnHitByBullet() end from class: %s"), *GetClass()->GetName());
 }
