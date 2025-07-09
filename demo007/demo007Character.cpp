@@ -90,6 +90,10 @@ void Ademo007Character::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &Ademo007Character::StopAiming);
 
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &Ademo007Character::OnReload);
+
+	PlayerInputComponent->BindAction("Weapon1", IE_Pressed, this, &Ademo007Character::EquipWeaponSlot1);
+	PlayerInputComponent->BindAction("Weapon2", IE_Pressed, this, &Ademo007Character::EquipWeaponSlot2);
+	PlayerInputComponent->BindAxis("MouseWheel", this, &Ademo007Character::HandleMouseWheel);
 }
 
 
@@ -106,12 +110,12 @@ void Ademo007Character::OnResetVR()
 
 void Ademo007Character::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		Jump();
+	Jump();
 }
 
 void Ademo007Character::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		StopJumping();
+	StopJumping();
 }
 
 void Ademo007Character::TurnAtRate(float Rate)
@@ -142,12 +146,12 @@ void Ademo007Character::MoveForward(float Value)
 
 void Ademo007Character::MoveRight(float Value)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
+
 		// get right vector 
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
@@ -157,6 +161,7 @@ void Ademo007Character::MoveRight(float Value)
 void Ademo007Character::BeginPlay()
 {
 	Super::BeginPlay();
+	SetupWeaponInventory();
 	// 假设 AAWeapon 是你的武器基类，AWeaponClass 是一个继承自 AAWeapon 的子类
 	DefaultWeaponClass = AAWeapon::StaticClass();
 	if (DefaultWeaponClass)
@@ -188,6 +193,84 @@ void Ademo007Character::BeginPlay()
 		}
 	}
 }
+
+void Ademo007Character::SetupWeaponInventory()
+{
+	Inventory.Empty();
+
+	TArray<TSubclassOf<AAWeapon>> WeaponClasses;
+	WeaponClasses.Add(DefaultWeaponClass); // 主武器
+	WeaponClasses.Add(DefaultWeaponClass); // 副武器（可换成其他类）
+
+	for (int32 i = 0; i < WeaponClasses.Num(); ++i)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = this;
+
+		AAWeapon* NewWeapon = GetWorld()->SpawnActor<AAWeapon>(WeaponClasses[i], SpawnParams);
+
+		if (NewWeapon)
+		{
+			NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("WeaponSocket"));
+			NewWeapon->SetActorHiddenInGame(true); // 初始隐藏
+			Inventory.Add(NewWeapon);
+		}
+	}
+
+	if (Inventory.Num() > 0)
+	{
+		EquipWeapon(0); // 默认切到主武器
+	}
+}
+
+void Ademo007Character::EquipWeapon(int32 Index)
+{
+	if (Index < 0 || Index >= Inventory.Num() || Index == CurrentWeaponIndex)
+		return;
+
+	StopFire();
+
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->SetActorHiddenInGame(true);
+		// todo StopReload()
+		//EquippedWeapon->StopReload(); 
+	}
+
+	EquippedWeapon = Inventory[Index];
+	CurrentWeaponIndex = Index;
+
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->SetActorHiddenInGame(false);
+		EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("WeaponSocket"));
+	}
+}
+void Ademo007Character::HandleMouseWheel(float Value)
+{
+	if (Value > 0.f)
+	{
+		PrevWeapon();
+	}
+	else if (Value < 0.f)
+	{
+		NextWeapon();
+	}
+}
+
+void Ademo007Character::NextWeapon()
+{
+	int32 NewIndex = (CurrentWeaponIndex + 1) % Inventory.Num();
+	EquipWeapon(NewIndex);
+}
+
+void Ademo007Character::PrevWeapon()
+{
+	int32 NewIndex = (CurrentWeaponIndex - 1 + Inventory.Num()) % Inventory.Num();
+	EquipWeapon(NewIndex);
+}
+
 void Ademo007Character::OnFire()
 {
 	// 判断是否有装备武器

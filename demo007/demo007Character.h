@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "demo007Character.generated.h"
 
-UCLASS(config=Game)
+UCLASS(config = Game)
 class Ademo007Character : public ACharacter
 {
 	GENERATED_BODY()
@@ -22,11 +22,11 @@ public:
 	Ademo007Character();
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
 protected:
@@ -40,14 +40,14 @@ protected:
 	/** Called for side to side input */
 	void MoveRight(float Value);
 
-	/** 
-	 * Called via input to turn at a given rate. 
+	/**
+	 * Called via input to turn at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void TurnAtRate(float Rate);
 
 	/**
-	 * Called via input to turn look up/down at a given rate. 
+	 * Called via input to turn look up/down at a given rate.
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
@@ -70,6 +70,18 @@ protected:
 	void StopFire();
 	void OnFire();
 	void OnReload();
+
+	UPROPERTY()
+	TArray<AAWeapon*> Inventory;
+
+	UPROPERTY()
+	int32 CurrentWeaponIndex = 0;
+
+	void SetupWeaponInventory();
+	void EquipWeapon(int32 Index);
+	void NextWeapon();
+	void PrevWeapon();
+	void HandleMouseWheel(float Value);
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -85,6 +97,9 @@ public:
 	TSubclassOf<AAWeapon> DefaultWeaponClass;  // 用于指定默认武器蓝图
 
 	class AAWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
+
+	void EquipWeaponSlot1() { EquipWeapon(0); }
+	void EquipWeaponSlot2() { EquipWeapon(1); }
 private:
 	bool bIsAiming; // 是否正在瞄准
 	// 控制自动开火
