@@ -51,7 +51,7 @@ Ademo007Character::Ademo007Character()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	bIsAiming = false;
-	PrimaryActorTick.bCanEverTick = true; // ¿ªÆô Tick µ÷ÓÃ
+	PrimaryActorTick.bCanEverTick = true; // å¼€å¯ Tick è°ƒç”¨
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ void Ademo007Character::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &Ademo007Character::StartFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &Ademo007Character::StopFire);
 
-	// Ãé×¼ÊäÈë£ºÓÒ¼ü°´ÏÂ/ËÉ¿ª
+	// ç„å‡†è¾“å…¥ï¼šå³é”®æŒ‰ä¸‹/æ¾å¼€
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &Ademo007Character::StartAiming);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &Ademo007Character::StopAiming);
 
@@ -162,7 +162,7 @@ void Ademo007Character::BeginPlay()
 {
 	Super::BeginPlay();
 	SetupWeaponInventory();
-	// ¼ÙÉè AAWeapon ÊÇÄãµÄÎäÆ÷»ùÀà£¬AWeaponClass ÊÇÒ»¸ö¼Ì³Ğ×Ô AAWeapon µÄ×ÓÀà
+	// å‡è®¾ AAWeapon æ˜¯ä½ çš„æ­¦å™¨åŸºç±»ï¼ŒAWeaponClass æ˜¯ä¸€ä¸ªç»§æ‰¿è‡ª AAWeapon çš„å­ç±»
 	DefaultWeaponClass = AAWeapon::StaticClass();
 	if (DefaultWeaponClass)
 	{
@@ -174,23 +174,19 @@ void Ademo007Character::BeginPlay()
 
 		if (EquippedWeapon)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Weapon successfully spawned at location: %s"), *EquippedWeapon->GetActorLocation().ToString());
-
+			
 			EquippedWeapon->AttachToComponent(
 				GetMesh(),
 				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-				FName("WeaponSocket") // Socket Ãû±ØĞëÌáÇ°ÔÚ¹Ç÷À×ÊÔ´Àï½¨ºÃ
+				FName("WeaponSocket") // Socket åå¿…é¡»æå‰åœ¨éª¨éª¼èµ„æºé‡Œå»ºå¥½
 			);
 			FVector LocationOffset = FVector::ZeroVector;
-			FRotator RotationOffset = FRotator(0.f, 90.f, 0.f); // ³õ²½Ğı×ª£¬ÊÓÄ£ĞÍÔÙµ÷Õû
+			FRotator RotationOffset = FRotator(0.f, 90.f, 0.f); // åˆæ­¥æ—‹è½¬ï¼Œè§†æ¨¡å‹å†è°ƒæ•´
 
 			EquippedWeapon->SetActorRelativeLocation(LocationOffset);
 			EquippedWeapon->SetActorRelativeRotation(RotationOffset);
 
-			// Êä³öÎäÆ÷Î»ÖÃ£¬È·ÈÏÊÇ·ñÕıÈ·¸½¼Ó
-			FVector WeaponLocation = EquippedWeapon->GetActorLocation();
-			UE_LOG(LogTemp, Warning, TEXT("Weapon attached at: %s"), *WeaponLocation.ToString());
-		}
+					}
 	}
 }
 
@@ -199,8 +195,8 @@ void Ademo007Character::SetupWeaponInventory()
 	Inventory.Empty();
 
 	TArray<TSubclassOf<AAWeapon>> WeaponClasses;
-	WeaponClasses.Add(DefaultWeaponClass); // Ö÷ÎäÆ÷
-	WeaponClasses.Add(DefaultWeaponClass); // ¸±ÎäÆ÷£¨¿É»»³ÉÆäËûÀà£©
+	WeaponClasses.Add(DefaultWeaponClass); // ä¸»æ­¦å™¨
+	WeaponClasses.Add(DefaultWeaponClass); // å‰¯æ­¦å™¨ï¼ˆå¯æ¢æˆå…¶ä»–ç±»ï¼‰
 
 	for (int32 i = 0; i < WeaponClasses.Num(); ++i)
 	{
@@ -213,14 +209,14 @@ void Ademo007Character::SetupWeaponInventory()
 		if (NewWeapon)
 		{
 			NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("WeaponSocket"));
-			NewWeapon->SetActorHiddenInGame(true); // ³õÊ¼Òş²Ø
+			NewWeapon->SetActorHiddenInGame(true); // åˆå§‹éšè—
 			Inventory.Add(NewWeapon);
 		}
 	}
 
 	if (Inventory.Num() > 0)
 	{
-		EquipWeapon(0); // Ä¬ÈÏÇĞµ½Ö÷ÎäÆ÷
+		EquipWeapon(0); // é»˜è®¤åˆ‡åˆ°ä¸»æ­¦å™¨
 	}
 }
 
@@ -273,28 +269,28 @@ void Ademo007Character::PrevWeapon()
 
 void Ademo007Character::OnFire()
 {
-	// ÅĞ¶ÏÊÇ·ñÓĞ×°±¸ÎäÆ÷
+	// åˆ¤æ–­æ˜¯å¦æœ‰è£…å¤‡æ­¦å™¨
 	if (!EquippedWeapon)
 	{
 		StopFire();
 		return;
 	}
 
-	// ÅĞ¶ÏÊÇ·ñÕıÔÚ»»µ¯
+	// åˆ¤æ–­æ˜¯å¦æ­£åœ¨æ¢å¼¹
 	if (EquippedWeapon->IsReloading())
 	{
 		StopFire();
 		return;
 	}
 
-	// ÅĞ¶Ïµ±Ç°ÊÇ·ñ»¹ÓĞ×Óµ¯
+	// åˆ¤æ–­å½“å‰æ˜¯å¦è¿˜æœ‰å­å¼¹
 	if (EquippedWeapon->GetCurrentAmmo() <= 0)
 	{
-		StopFire(); // ×Ô¶¯Í£Ö¹¿ª»ğ
+		StopFire(); // è‡ªåŠ¨åœæ­¢å¼€ç«
 		return;
 	}
 
-	// ÏÈ¼õÉÙµ¯Ò©£¬ÔÙ¿ª»ğ
+	// å…ˆå‡å°‘å¼¹è¯ï¼Œå†å¼€ç«
 	EquippedWeapon->DecreaseAmmo(1);
 	EquippedWeapon->Fire();
 }
@@ -305,10 +301,10 @@ void Ademo007Character::Tick(float DeltaTime)
 	float TargetLength = bIsAiming ? 150.f : 300.f;
 	CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, TargetLength, DeltaTime, 10.f);
 
-	//  Ä¬ÈÏÆ«ÒÆ
+	//  é»˜è®¤åç§»
 	FVector TargetOffset = bIsAiming ? FVector(0.f, 50.f, 10.f) : FVector(0.f, 50.f, 50.f);
 	CameraBoom->SocketOffset = FMath::VInterpTo(CameraBoom->SocketOffset, TargetOffset, DeltaTime, 10.f);
-	// ×¼ĞÇÀ©É¢¿ØÖÆ
+	// å‡†æ˜Ÿæ‰©æ•£æ§åˆ¶
 	if (bIsFiring)
 	{
 		CrosshairSpread = FMath::Min(CrosshairSpread + SpreadIncreaseRate * DeltaTime, MaxCrosshairSpread);
@@ -332,17 +328,17 @@ void Ademo007Character::StartFire()
 {
 	if (bIsFiring || EquippedWeapon == nullptr) return;
 
-	// ÅĞ¶ÏÎäÆ÷ÊÇ·ñÕıÔÚ»»µ¯
+	// åˆ¤æ–­æ­¦å™¨æ˜¯å¦æ­£åœ¨æ¢å¼¹
 	if (EquippedWeapon->IsReloading())
 	{
 		return;
 	}
 	bIsFiring = true;
 
-	// Á¢¼´¿ªÒ»´Î»ğ
+	// ç«‹å³å¼€ä¸€æ¬¡ç«
 	OnFire();
 
-	// ¿ªÊ¼Ñ­»·µ÷ÓÃ OnFire£¨Ã¿¸ô FireRate Ãë£©
+	// å¼€å§‹å¾ªç¯è°ƒç”¨ OnFireï¼ˆæ¯éš” FireRate ç§’ï¼‰
 	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &Ademo007Character::OnFire, FireRate, true);
 }
 
@@ -352,7 +348,7 @@ void Ademo007Character::StopFire()
 
 	bIsFiring = false;
 
-	// Í£Ö¹¶¨Ê±Æ÷
+	// åœæ­¢å®šæ—¶å™¨
 	GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
 }
 void Ademo007Character::OnReload()
