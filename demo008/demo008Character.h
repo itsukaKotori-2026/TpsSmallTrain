@@ -96,12 +96,18 @@ public:
 	void EquipWeaponSlot1() { EquipWeapon(0); }
 	void EquipWeaponSlot2() { EquipWeapon(1); }
 
+	void EquipMeleeWeapon() { EquipWeapon(2); }
+	void EquipGrenadeWeapon() { EquipWeapon(3); }
+
 	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
 TSubclassOf<class AAWeapon> DefaultWeaponClass1; // 主武器
 
 UPROPERTY(EditDefaultsOnly, Category = "Weapons")
 TSubclassOf<class AAWeapon> DefaultWeaponClass2; // 副武器
-
+UPROPERTY(EditDefaultsOnly, Category = "Weapons")
+TSubclassOf<class AAWeapon> DefaultWeaponClass3; // 近战武器
+UPROPERTY(EditDefaultsOnly, Category = "Weapons")
+TSubclassOf<class AAWeapon> DefaultWeaponClass4; // 手雷
 private:
 	bool bIsAiming; // 是否正在瞄准
 

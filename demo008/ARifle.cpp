@@ -20,11 +20,3 @@ AARifle::AARifle()
         Mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
     }
 }
-
-// 重写 Fire 方法，执行武器射击逻辑
-void AARifle::Fire()
-{
-    // 你可以在这里添加具体的射击逻辑
-    Super::Fire();
-    UE_LOG(LogTemp, Warning, TEXT("Firing ARifle..."));
-}

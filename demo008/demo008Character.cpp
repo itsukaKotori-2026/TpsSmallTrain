@@ -2,8 +2,11 @@
 
 #include "demo008Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 #include "ARifle.h"  // 引入 ARifle 头文件
 #include "AKA47Weapon.h"
+#include "AGrenadeWeapon.h"
+#include "MeleeWeapon.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -95,6 +98,9 @@ void Ademo008Character::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("MouseWheelUp", IE_Pressed, this, &Ademo008Character::NextWeapon);
 	PlayerInputComponent->BindAction("MouseWheelDown", IE_Pressed, this, &Ademo008Character::PrevWeapon);
 
+	// 绑定切换武器的输入
+	PlayerInputComponent->BindAction("Weapon3", IE_Pressed, this, &Ademo008Character::EquipMeleeWeapon);
+	PlayerInputComponent->BindAction("Weapon4", IE_Pressed, this, &Ademo008Character::EquipGrenadeWeapon);
 }
 
 
@@ -175,9 +181,9 @@ void Ademo008Character::BeginPlay()
 	DefaultWeaponClass1 = AAKA47Weapon::StaticClass(); // 主武器 AK
 	DefaultWeaponClass2 = AARifle::StaticClass();      // 副武器 AR4
 
+	DefaultWeaponClass3 = AMeleeWeapon::StaticClass();      // 
+	DefaultWeaponClass4 = AAGrenadeWeapon::StaticClass(); //手雷 
 	SetupWeaponInventory(); // 初始化武器列表
-
-	
 }
 
 void Ademo008Character::SetupWeaponInventory()
@@ -187,7 +193,8 @@ void Ademo008Character::SetupWeaponInventory()
 	TArray<TSubclassOf<AAWeapon>> WeaponClasses;
 	WeaponClasses.Add(DefaultWeaponClass1); // 主武器：AK
 	WeaponClasses.Add(DefaultWeaponClass2); // 副武器：AR4
-
+	WeaponClasses.Add(DefaultWeaponClass3);// 近战武器
+	WeaponClasses.Add(DefaultWeaponClass4);
 	for (int32 i = 0; i < WeaponClasses.Num(); ++i)
 	{
 		if (!*WeaponClasses[i])
@@ -204,13 +211,32 @@ void Ademo008Character::SetupWeaponInventory()
 		if (NewWeapon)
 		{
 			NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("WeaponSocket"));
-			// 添加位置/旋转偏移
-			FVector LocationOffset = FVector(0.f, 0.f, 0.f); // 可根据需要调整
-			FRotator RotationOffset = FRotator(0.f, 90.f, 0.f); // 让枪横过来
-			NewWeapon->SetActorRelativeLocation(LocationOffset);
-			NewWeapon->SetActorRelativeRotation(RotationOffset);
-			
-			
+			// 对于主武器和副武器，确保它朝向正确
+			bool bIsMainOrSecondaryWeapon =
+				NewWeapon &&
+				(NewWeapon->IsA(AAKA47Weapon::StaticClass()) || NewWeapon->IsA(AARifle::StaticClass()));
+
+			if (bIsMainOrSecondaryWeapon)
+			{
+				FVector LocationOffset = FVector(0.f, 0.f, 0.f); // 可根据需要调整
+				FRotator RotationOffset = FRotator(0.f, 90.f, 0.f); // 让枪横过来
+				NewWeapon->SetActorRelativeLocation(LocationOffset);
+				NewWeapon->SetActorRelativeRotation(RotationOffset);
+			}
+			// 对于近战武器（匕首），确保它朝向正确
+			bool bIsThirdOrFourthWeapon =
+				NewWeapon &&
+				(NewWeapon->IsA(AMeleeWeapon::StaticClass()) || NewWeapon->IsA(AAGrenadeWeapon::StaticClass()));
+			if (bIsThirdOrFourthWeapon)
+			{
+				FVector LocationOffset = FVector(-20.f, 0.f, 0.f); // 根据需要微调
+				FRotator RotationOffset = FRotator(90.f, 180.f, 0.f); // 朝向反转
+
+				NewWeapon->SetActorRelativeLocation(LocationOffset);
+				NewWeapon->SetActorRelativeRotation(RotationOffset);
+				UE_LOG(LogTemp, Warning, TEXT("World Rotation of weapon: %s"), *NewWeapon->GetActorRotation().ToString());
+				DrawDebugCoordinateSystem(GetWorld(), NewWeapon->GetActorLocation(), NewWeapon->GetActorRotation(), 20.f, true, 10.f, 0, 2.f);
+			}
 			NewWeapon->SetActorHiddenInGame(true); // 初始隐藏
 			Inventory.Add(NewWeapon);
 			UE_LOG(LogTemp, Warning, TEXT("Weapon %s attached to character."), *NewWeapon->GetName());

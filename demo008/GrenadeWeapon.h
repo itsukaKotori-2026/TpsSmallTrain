@@ -4,18 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "AWeapon.h"
-#include "ARifle.generated.h"
+#include "GrenadeWeapon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DEMO008_API AARifle : public AAWeapon
+class DEMO008_API AGrenadeWeapon : public AAWeapon
 {
 	GENERATED_BODY()
-public:
-    // ¹¹Ôìº¯Êý
-    AARifle();
-
-
+	
 };

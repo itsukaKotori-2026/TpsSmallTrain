@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "AZombie.h"
 #include "MyHUD.h"
 
 AMyGameMode::AMyGameMode()
@@ -27,16 +28,29 @@ void AMyGameMode::BeginPlay()
     UWorld* World = GetWorld();
     if (World)
     {
-        FVector SpawnLocation(0.f, 0.f, 300.f); // 
-        FRotator SpawnRotation = FRotator(0.f, 0.f, 0.f);
+        FVector TargetSpawnLocation(0.f, 0.f, 300.f); // 
+        FRotator  TargetSpawnRotation = FRotator(0.f, 0.f, 0.f);
 
-        FActorSpawnParameters SpawnParams;
+        FActorSpawnParameters TargetSpawnParams;
 
         AActor* SpawnedTarget = World->SpawnActor<ATargetActor>(
             ATargetActor::StaticClass(),
-            SpawnLocation,
-            SpawnRotation,
-            SpawnParams
+            TargetSpawnLocation,
+            TargetSpawnRotation,
+            TargetSpawnParams
         );
+
+        FVector ZombieSpawnLocation(0.f, 0.f, 100.f); // 定义僵尸的生成位置
+        FRotator ZombieSpawnRotation = FRotator::ZeroRotator; //设置生成时的朝向
+        //生成时有物体挡住，就尝试稍微移动生成位置,避免因为碰撞问题导致生成失败
+        FActorSpawnParameters ZombieSpawnParams;
+        ZombieSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+        //GetWorld()：获取当前的游戏世界上下文,生成后，返回一个指向新 AAZombie 实例的指针
+        AAZombie* SpawnedZombie = GetWorld()->SpawnActor<AAZombie>(AAZombie::StaticClass(), ZombieSpawnLocation, ZombieSpawnRotation, ZombieSpawnParams);
+
+        if (SpawnedZombie)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Zombie spawned successfully"));
+        }
     }
 }

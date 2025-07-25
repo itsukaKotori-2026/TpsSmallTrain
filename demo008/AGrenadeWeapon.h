@@ -4,18 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "AWeapon.h"
-#include "ARifle.generated.h"
+#include "AGrenadeWeapon.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class DEMO008_API AARifle : public AAWeapon
+class DEMO008_API AAGrenadeWeapon : public AAWeapon
 {
 	GENERATED_BODY()
-public:
-    // ¹¹Ôìº¯Êý
-    AARifle();
-
+	
+public:	
+	// Sets default values for this actor's properties
+	AAGrenadeWeapon();
 
 };
